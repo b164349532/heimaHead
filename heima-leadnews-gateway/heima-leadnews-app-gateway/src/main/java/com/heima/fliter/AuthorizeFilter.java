@@ -30,13 +30,17 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
         //1.获取request response
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
+        boolean contains = request.getURI().getPath().contains("/login");
+        System.out.println(contains);
+
+
         if (request.getURI().getPath().contains("/login")){
             return chain.filter(exchange);
         }
         //2.获取token
         //3.判断token时候存在
-        String token = request.getHeaders().getFirst("/token");
-        if (StringUtils.isNotBlank(token)){
+        String token = request.getHeaders().getFirst("token");
+        if (StringUtils.isBlank(token)){
            response.setStatusCode(HttpStatus.UNAUTHORIZED);
            return response.setComplete();
        }
