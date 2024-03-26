@@ -2,15 +2,12 @@ package com.heima.fliter;
 
 
 import com.alibaba.cloud.commons.lang.StringUtils;
-import com.heima.util.AppJwtUtil;
-import com.sun.deploy.association.utility.AppUtility;
+import com.heima.until.AppJwtUtil;
 import io.jsonwebtoken.Claims;
-import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -31,7 +28,6 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
         boolean contains = request.getURI().getPath().contains("/login");
-        System.out.println(contains);
 
 
         if (request.getURI().getPath().contains("/login")){
@@ -54,6 +50,16 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
+
+            //获取用户信息存入head
+            Object userId = claimsBody.getId();
+            //存储header中
+            ServerHttpRequest serverHttpRequest = request.mutate().headers(httpHeader -> {
+                httpHeader.add("userId", userId + "");
+            }).build();
+
+            //重置请求
+            exchange.mutate().request(serverHttpRequest);
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatusCode(HttpStatus.UNAUTHORIZED);

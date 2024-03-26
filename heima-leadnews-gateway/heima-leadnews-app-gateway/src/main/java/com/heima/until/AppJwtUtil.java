@@ -1,10 +1,11 @@
-package com.heima.util;
+package com.heima.until;
 
 import io.jsonwebtoken.*;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.*;
+
 
 public class AppJwtUtil {
 
